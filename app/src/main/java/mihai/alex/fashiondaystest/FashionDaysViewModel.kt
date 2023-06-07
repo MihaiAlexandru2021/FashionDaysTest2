@@ -21,9 +21,10 @@ class FashionDaysViewModel : ViewModel() {
         retrofitService.getClothing().enqueue(object : Callback<mihai.alex.fashiondaystest.data.Response> {
             override fun onResponse(call: Call<mihai.alex.fashiondaystest.data.Response>, response: Response<mihai.alex.fashiondaystest.data.Response>) {
                 if (response.isSuccessful) {
-                    response.body()?.listProduct?.forEach {
+                    response.body()?.products?.forEach {
                         productList.value?.add(it)
                     }
+                    Log.d("SUCCES", response.body().toString())
                 }
             }
 
