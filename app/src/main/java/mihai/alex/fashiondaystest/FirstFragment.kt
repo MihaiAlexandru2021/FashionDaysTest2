@@ -42,13 +42,11 @@ class FirstFragment : Fragment() {
         swipeRefreshLayout = binding.container
         fashionRecycler = binding.rvFashionDays
 
-        setupRecycler(null)
-
         return binding.root
 
     }
 
-    private fun setupRecycler(product: List<Product>?) {
+    private fun setupRecycler(product: List<Product>) {
         fashionAdapter = FashionAdapter(product)
         fashionRecycler.adapter = fashionAdapter
     }
@@ -59,7 +57,6 @@ class FirstFragment : Fragment() {
         viewModel.productList.observe(viewLifecycleOwner, Observer {
             setupRecycler(it)
         })
-
         swipeRefreshLayout.setOnRefreshListener {
             swipeRefreshLayout.isRefreshing = false
             viewModel.getProducts()

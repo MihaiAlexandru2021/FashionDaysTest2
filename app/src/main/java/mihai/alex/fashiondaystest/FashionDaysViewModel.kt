@@ -13,7 +13,7 @@ import retrofit2.Response
 class FashionDaysViewModel : ViewModel() {
 
     private val service = Service
-    var productList = MutableLiveData<MutableList<Product>>()
+    var productList = MutableLiveData<ArrayList<Product>>()
 
 
     fun getProducts() {
@@ -21,9 +21,7 @@ class FashionDaysViewModel : ViewModel() {
         retrofitService.getClothing().enqueue(object : Callback<mihai.alex.fashiondaystest.data.Response> {
             override fun onResponse(call: Call<mihai.alex.fashiondaystest.data.Response>, response: Response<mihai.alex.fashiondaystest.data.Response>) {
                 if (response.isSuccessful) {
-                    response.body()?.products?.forEach {
-                        productList.value?.add(it)
-                    }
+                    productList.value = response.body()?.products as ArrayList<Product>?
                     Log.d("SUCCES", response.body().toString())
                 }
             }
