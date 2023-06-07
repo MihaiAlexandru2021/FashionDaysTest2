@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import mihai.alex.fashiondaystest.data.Product
 
-class FashionAdapter(private val productList: List<Product>): RecyclerView.Adapter<FashionAdapter.FashionViewHolder>() {
+class FashionAdapter(private val productList: List<Product>?): RecyclerView.Adapter<FashionAdapter.FashionViewHolder>() {
 
     class FashionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageViewProduct: ImageView = itemView.findViewById(R.id.img_product)
@@ -26,17 +26,20 @@ class FashionAdapter(private val productList: List<Product>): RecyclerView.Adapt
     }
 
     override fun getItemCount(): Int {
-        return productList.size
+        return productList?.size ?: 0
     }
 
     override fun onBindViewHolder(holder: FashionViewHolder, position: Int) {
-        val product = productList[position]
+        val product = productList?.get(position)
 
-        holder.textViewName.text = product.productName
-        holder.textViewBrand.text = product.productBrand
+        if (product != null) {
+            holder.textViewName.text = product.productName
+            holder.textViewBrand.text = product.productBrand
 
-        Picasso.with(holder.imageViewProduct.context)
-            .load(product.productImages[0].thumb[0])
-            .into(holder.imageViewProduct)
+            Picasso.with(holder.imageViewProduct.context)
+                .load(product.productImages[0].thumb[0])
+                .into(holder.imageViewProduct)
+        }
+
     }
 }

@@ -6,8 +6,3 @@ data class Product (
     val productBrand: String,
     val productImages: List<ProductImages>
 )
-
-data class ProductImages(
-    val thumb: List<String>,
-    val zoom: List<String>,
-)
