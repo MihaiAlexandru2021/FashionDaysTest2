@@ -1,35 +1,71 @@
 package mihai.alex.fashiondaystest
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import mihai.alex.fashiondaystest.data.Product
-import mihai.alex.fashiondaystest.request.Api
-import mihai.alex.fashiondaystest.request.Service
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.launch
+import mihai.alex.fashiondaystest.data.Element
+import mihai.alex.fashiondaystest.data.TypeItem
+import mihai.alex.fashiondaystest.model.ClothingRepository
 
 class FashionDaysViewModel : ViewModel() {
 
-    private val service = Service
-    var productList = MutableLiveData<ArrayList<Product>>()
+    private val repository = ClothingRepository()
+    val clothingState = MutableStateFlow(ArrayList<Element>())
 
+    init {
+        getClothing()
+    }
 
-    fun getProducts() {
-        val retrofitService = service.getRetrofitInstance().create(Api::class.java)
-        retrofitService.getClothing().enqueue(object : Callback<mihai.alex.fashiondaystest.data.Response> {
-            override fun onResponse(call: Call<mihai.alex.fashiondaystest.data.Response>, response: Response<mihai.alex.fashiondaystest.data.Response>) {
-                if (response.isSuccessful) {
-                    productList.value = response.body()?.products as ArrayList<Product>?
-                    Log.d("SUCCES", response.body().toString())
+    private fun getClothing() {
+        viewModelScope.launch {
+            repository.getClothing()
+                .catch {
+                    it.message?.let { message -> Log.e("ERROR", message) }
+                }.collect {
+                    val initialList = it.products.sortedBy { product ->
+                        product.productBrand.trim().lowercase()
+                    }
+                    val elementList: ArrayList<Element> = ArrayList()
+                    var lastBrand: String? = null
+                    initialList.forEach {product ->
+                        val element = Element(
+                            product = product,
+                            brand = "",
+                            type = TypeItem.PRODUCT
+                        )
+
+                        if (product.productBrand != lastBrand) {
+
+                            val brand = Element(
+                                product = null,
+                                brand = product.productBrand,
+                                type = TypeItem.HEADER
+                            )
+
+                            elementList.add(brand)
+                            lastBrand = brand.brand
+                        }
+                        elementList.add(element)
+                    }
+
+                    clothingState.value = elementList
                 }
-            }
+        }
+    }
 
-            override fun onFailure(call: Call<mihai.alex.fashiondaystest.data.Response>, t: Throwable) {
-                t.message?.let { Log.d("ERROR", it) }
-            }
+    fun removeProduct(productPosition: Int) {
+        val element = clothingState.value[productPosition]
+        clothingState.value.remove(element)
+    }
 
-        })
+    fun undoProduct(productPosition: Int, deleteProduct: Element) {
+        clothingState.value.add(productPosition, deleteProduct)
+    }
+
+    fun refreshList() {
+        getClothing()
     }
 }

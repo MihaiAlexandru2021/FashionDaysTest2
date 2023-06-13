@@ -4,13 +4,10 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.Headers
 
+const val BASE_URL = "https://m.fashiondays.com/mobile/8/g/women/"
 object Service {
-    val BASE_URL = "https://m.fashiondays.com/mobile/8/g/women/"
-
-
-    fun getRetrofitInstance(): Retrofit {
+    private fun getRetrofitInstance(): Retrofit {
 
         val okHttpClient = OkHttpClient.Builder().apply {
             addInterceptor(
@@ -28,4 +25,6 @@ object Service {
             .client(okHttpClient)
             .build()
     }
+
+    val apiService: ApiService = getRetrofitInstance().create(ApiService::class.java)
 }
