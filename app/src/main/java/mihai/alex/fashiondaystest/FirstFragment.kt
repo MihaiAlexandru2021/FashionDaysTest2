@@ -1,5 +1,6 @@
 package mihai.alex.fashiondaystest
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -71,13 +72,14 @@ class FirstFragment : Fragment() {
                 return false
             }
 
+            @SuppressLint("NotifyDataSetChanged")
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val deleteProduct: Element =
                     viewModel.clothingState.value[viewHolder.adapterPosition]
                 val position = viewHolder.adapterPosition
 
                 viewModel.removeProduct(position)
-                fashionAdapter.notifyItemRemoved(position)
+                fashionAdapter.notifyDataSetChanged()
 
                 Snackbar.make(
                     fashionRecycler,
@@ -85,7 +87,7 @@ class FirstFragment : Fragment() {
                     Snackbar.LENGTH_LONG
                 ).setAction("Undo") {
                     viewModel.undoProduct(position, deleteProduct)
-                    fashionAdapter.notifyItemInserted(position)
+                    fashionAdapter.notifyDataSetChanged()
                 }.show()
             }
         }).attachToRecyclerView(fashionRecycler)
