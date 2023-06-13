@@ -47,6 +47,9 @@ class FirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.fabUp.setOnClickListener {
+            fashionRecycler.layoutManager?.smoothScrollToPosition(fashionRecycler, null, 0)
+        }
         lifecycleScope.launch {
             viewModel.clothingState.collect{
                 if (it.isEmpty()) {
